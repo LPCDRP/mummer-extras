@@ -21,10 +21,16 @@ parser.add_argument("snps_file",
 
 arguments = parser.parse_args()
 
-# This will need to be changed if the reference is a multi-fasta
-sequence = SeqIO.read(arguments.reference,"fasta")
+seqs = {}
+for seq in SeqIO.parse(arguments.reference,"fasta"):
+	seqs[seq.id] = seq
+
 reader = csv.reader(arguments.snps_file,delimiter='\t')
 writer = csv.writer(sys.stdout,delimiter='\t')
+
+writer.writerow(['##fileformat=VCFv4.2'])
+writer.writerow(['#CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO'])
+vcf_null = '.'
 
 for line in reader:
 	if "#" in line[0]:
@@ -32,14 +38,22 @@ for line in reader:
 	position=int(line[0])
 	alt=line[2]
 	ref=line[1]
+	refid=line[10]
 	# Insertions #
 	if ref == ".":
-		ref=sequence[position-1]
+		ref=seqs[refid][position-1]
 		alt=ref+alt
 	# Deletions
 	if alt == ".":
-		ref=sequence[position-2] + ref
-		alt=sequence[position-2]
+		ref=seqs[refid][position-2] + ref
+		alt=seqs[refid][position-2]
 	line[1] = ref
 	line[2] = alt
-	writer.writerow(line)
+	writer.writerow([refid,
+                         position,
+                         vcf_null,
+                         ref,
+                         alt,
+                         vcf_null,
+                         'PASS',
+                         vcf_null])
