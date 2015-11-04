@@ -1,12 +1,21 @@
 #!/usr/bin/env python2.7
 
 import sys,csv,os
+import argparse
 
 from Bio import SeqIO
 from Bio.Seq import Seq
 
+parser = argparse.ArgumentParser()
 
-fasta=open(sys.argv[1],'r')
+parser.add_argument("--reference",
+                    help="Reference sequence (fasta format)",
+                    type=str,
+                    required=True)
+
+arguments = parser.parse_args()
+
+fasta=open(arguments.reference,'r')
 lines=fasta.readlines()
 #vcf=open(sys.argv[2],'r')
 output_file = open(sys.argv[3],'w')
