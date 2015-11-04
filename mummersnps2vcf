@@ -21,21 +21,12 @@ parser.add_argument("snps_file",
 
 arguments = parser.parse_args()
 
-fasta=open(arguments.reference,'r')
-lines=fasta.readlines()
+# This will need to be changed if the reference is a multi-fasta
+sequence = SeqIO.read(arguments.reference,"fasta")
 #vcf=open(sys.argv[2],'r')
 reader = csv.reader(arguments.snps_file,delimiter='\t')
 writer = csv.writer(sys.stdout,delimiter='\t')
-	#fasta=fasta.strip('\n')
-#	lines=lines.strip('\n')
-for line in lines:
-	if ">" in line:
-		j=''
-		continue
-	else:
-		j=j+line.strip('\n')
-		#j=line.strip('\n')
-		sequence=Seq(j)
+
 for line in reader:
 	if "#" in line[0]:
 		continue
