@@ -1,7 +1,10 @@
 #!/usr/bin/env python2.7
+
 import sys,csv,os
+
 from Bio import SeqIO
 from Bio.Seq import Seq
+
 
 fasta=open(sys.argv[1],'r')
 lines=fasta.readlines()
