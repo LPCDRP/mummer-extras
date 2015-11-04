@@ -23,7 +23,6 @@ arguments = parser.parse_args()
 
 # This will need to be changed if the reference is a multi-fasta
 sequence = SeqIO.read(arguments.reference,"fasta")
-#vcf=open(sys.argv[2],'r')
 reader = csv.reader(arguments.snps_file,delimiter='\t')
 writer = csv.writer(sys.stdout,delimiter='\t')
 
