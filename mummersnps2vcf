@@ -30,19 +30,17 @@ writer = csv.writer(sys.stdout,delimiter='\t')
 for line in reader:
 	if "#" in line[0]:
 		continue
-	position=int(line[1])
-	alt=line[4]
-	ref=line[3]
+	position=int(line[0])
+	alt=line[2]
+	ref=line[1]
 	# Insertions #
-	if "." in line[3]:
-
-		new_ref=sequence[position-1]
-		line[3]=new_ref
-		line[4]=new_ref+line[4]
-		#line[4]=new_alt
+	if ref == ".":
+		ref=sequence[position-1]
+		alt=ref+alt
 	# Deletions
-	if "." in line[4]:
-		line[3]=sequence[position-2] + ref
-		line[4]=sequence[position-2]
-
+	if alt == ".":
+		ref=sequence[position-2] + ref
+		alt=sequence[position-2]
+	line[1] = ref
+	line[2] = alt
 	writer.writerow(line)
