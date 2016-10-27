@@ -1,0 +1,5 @@
+##fileformat=VCFv4.2
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+consecutives	84	.	TTTTT	CCCCC	.	PASS	.
+consecutives	718	.	T	TGGGGGG	.	PASS	.
+consecutives	1148	.	CATGAAG	C	.	PASS	.

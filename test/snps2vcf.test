@@ -1,0 +1,25 @@
+#!/usr/bin/make -kf
+
+selfdir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+
+tests = \
+ general \
+ consecutives
+
+.PHONY: all
+all: $(tests)
+
+.PHONY: consecutives
+consecutives: consecutives.pass.vcf consecutives.ref.fasta consecutives.qry.fasta
+	mkdir -p $@ \
+	&& dnadiff -p $@/out $(filter-out $<,$^) \
+	&& mummer-snps2vcf --reference $(word 2,$^) $@/out.snps \
+	| diff -u $< -
+
+.PHONY: general
+general: reference.fasta general.fasta
+	mkdir -p $@ \
+	&& dnadiff -p $@/out $^ \
+	&& mummer-snps2vcf --reference $< $@/out.snps \
+	| bcftools norm --fasta-ref $< > $@.vcf
+	$(RM) -r $@
