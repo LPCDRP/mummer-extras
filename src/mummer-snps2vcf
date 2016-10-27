@@ -2,9 +2,23 @@
 
 import sys,csv,os
 import argparse
+from enum import Enum
 
 from Bio import SeqIO
 from Bio.Seq import Seq
+
+
+vcf_null = '.'
+
+def write(writer, refid, position, ref, alt):
+	writer.writerow([refid,
+			 position,
+			 vcf_null,
+			 ref,
+			 alt,
+			 vcf_null,
+			 'PASS',
+			 vcf_null])
 
 parser = argparse.ArgumentParser()
 
@@ -30,29 +44,56 @@ writer = csv.writer(sys.stdout,delimiter='\t',lineterminator='\n')
 
 writer.writerow(['##fileformat=VCFv4.2'])
 writer.writerow(['#CHROM','POS','ID','REF','ALT','QUAL','FILTER','INFO'])
-vcf_null = '.'
+
+var_type = Enum('var_type', 'snp insertion deletion')
+last_var = None
+ref, alt = '', ''
 
 for line in reader:
 	if "#" in line[0]:
 		continue
-	position=int(line[0])
-	alt=line[2]
-	ref=line[1]
-	refid=line[10]
+	current_position=int(line[0])
+	current_ref=line[1]
+	current_alt=line[2]
+	current_refid=line[10]
 	# Insertions #
-	if ref == ".":
-		ref=seqs[refid][position-1]
-		alt=ref+alt
+	if current_ref == ".":
+		if last_var == var_type.insertion \
+		   and position==current_position:
+			alt += current_alt
+			continue
+		elif last_var:
+			write(writer, refid, position, ref, alt)
+		refid=current_refid
+		ref=seqs[current_refid][current_position-1]
+		alt=ref+current_alt
+		position = current_position
+		last_var = var_type.insertion
 	# Deletions
-	if alt == ".":
-		ref=seqs[refid][position-2] + ref
-		alt=seqs[refid][position-2]
-		position = position - 1
-	writer.writerow([refid,
-                         position,
-                         vcf_null,
-                         ref,
-                         alt,
-                         vcf_null,
-                         'PASS',
-                         vcf_null])
+	elif current_alt == ".":
+		if last_var == var_type.deletion \
+		   and current_position==(position + len(ref)):
+			ref += current_ref
+			continue
+		elif last_var:
+			write(writer, refid, position, ref, alt)
+		refid=current_refid
+		ref=seqs[current_refid][current_position-2] + current_ref
+		alt=seqs[current_refid][current_position-2]
+		position = current_position - 1
+		last_var = var_type.deletion
+	else:
+		if last_var == var_type.snp \
+		   and current_position==(position + len(ref)):
+			ref += current_ref
+			alt += current_alt
+			continue
+		elif last_var:
+			write(writer, refid, position, ref, alt)
+		last_var = var_type.snp
+		refid=current_refid
+		position = current_position
+		ref=current_ref
+		alt=current_alt
+
+write(writer, refid, position, ref, alt)
