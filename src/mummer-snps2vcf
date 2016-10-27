@@ -23,15 +23,15 @@ def write(writer, refid, position, ref, alt):
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--reference",
-                    help="Reference sequence (fasta format)",
-                    type=str,
-                    required=True)
+		    help="Reference sequence (fasta format)",
+		    type=str,
+		    required=True)
 
 parser.add_argument("snps_file",
-                    help="Output from show-snps(1)",
-                    nargs='?',
-                    type=argparse.FileType('r'),
-                    default=sys.stdin)
+		    help="Output from show-snps(1)",
+		    nargs='?',
+		    type=argparse.FileType('r'),
+		    default=sys.stdin)
 
 arguments = parser.parse_args()
 
