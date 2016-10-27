@@ -47,6 +47,7 @@ for line in reader:
 	if alt == ".":
 		ref=seqs[refid][position-2] + ref
 		alt=seqs[refid][position-2]
+		position = position - 1
 	line[1] = ref
 	line[2] = alt
 	writer.writerow([refid,
