@@ -48,8 +48,6 @@ for line in reader:
 		ref=seqs[refid][position-2] + ref
 		alt=seqs[refid][position-2]
 		position = position - 1
-	line[1] = ref
-	line[2] = alt
 	writer.writerow([refid,
                          position,
                          vcf_null,
